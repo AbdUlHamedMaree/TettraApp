@@ -1,0 +1,64 @@
+﻿.LeftMenuSingleContact {
+    position: relative;
+    box-shadow: 0px 21px 0px -20px rgb(240, 240, 240);
+    height: 70px;
+    transition: .15s;
+}
+.LeftMenuSingleContact:hover {
+    background-color: hsl(200, 100%, 80%);
+    cursor: pointer;
+}
+
+.LeftMenuSingleContact:last-child {
+    box-shadow: none;
+}
+
+.LeftMenuSingleContact::before {
+    position: absolute;
+    background-color: green;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    content: '';
+    z-index: 1;
+    top: 45px;
+    left: 45px;
+}
+
+.LMC_Image {
+    border-radius: 50%;
+}
+
+.LMC_LastSeen {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.LMC_Image:hover {
+    cursor: pointer;
+}
+
+.LMC_Image {
+    padding: 1px;
+    top: 5px;
+    left: 5px;
+    border: 3px solid gray;
+    position: absolute;
+}
+
+.LMC_UserName {
+    position: absolute;
+    font-size: 20px;
+    left: 80px;
+    top: 5px;
+    font-weight: 700;
+}
+
+.LMC_LastMessage {
+    position: absolute;
+    top: 40px;
+    left: 80px;
+    font-weight: 700;
+    color: rgbA(0, 0, 0, .3);
+}

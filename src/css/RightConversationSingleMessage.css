@@ -1,0 +1,25 @@
+
+.msg{
+    color:white;
+    font-size: 22px;
+    padding:0 10px;
+    margin: 5px;
+    max-width: 10em;
+    min-width: 2em;
+    border-radius: 3px;
+    text-align: center;
+    position: relative;
+    clear: both;
+}
+
+.RCSM_Res{
+    background-color: rgb(160, 160, 160);
+    border: 1px solid rgb(160, 160, 160);
+    float: right; 
+}
+
+.RCSM_Sen{
+    background-color: rgb(0, 0, 255);
+    border: 1px solid rgb(0, 0, 255);
+    float: left;
+}

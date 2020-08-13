@@ -1,0 +1,6 @@
+﻿.LeftMenu {
+    background-color: white;
+    float: left;
+    box-shadow: 2px 0px 4px -2px gray;
+    overflow: auto;
+}

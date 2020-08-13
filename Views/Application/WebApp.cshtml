@@ -1,0 +1,18 @@
+﻿@model WebApplication_TetraApp.Models.LogIn
+@{
+    ViewData["Title"] = "WebApp";
+    Layout = null;
+}
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link type="manifest" href="~/dist/manifest.json" />
+    <link href="~/dist/static/css/bundle.css" rel="stylesheet" type="text/css" />
+    <title>Tetra-Messanger</title>
+</head>
+<body style="margin:0px;padding:0px;">
+    <div id="root"></div>
+    <input id="ID" type="hidden" value="@ViewBag.ID" />
+    <script src="~/dist/static/js/bundle.js"></script>
+</body>
+</html>

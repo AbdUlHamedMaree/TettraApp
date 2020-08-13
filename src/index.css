@@ -1,0 +1,72 @@
+﻿@import './css/LeftMenu.css';
+@import './css/LeftMenuTopState.css';
+@import './css/LeftMenuSingleContact.css';
+@import './css/LeftMenuPages.css';
+@import './css/RightConversation.css';
+@import './css/RightConversationBottomBar.css';
+@import './css/RightConversationTopStats.css';
+@import './css/RightConversationMessages.css';
+@import './css/RightConversationSingleMessage.css';
+
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Segoe UI';
+}
+
+.HoverEffect:hover {
+    background-color: rgb(0, 95, 200);
+    cursor: pointer;
+}
+
+.HoverEffect:hover > path {
+    fill: white;
+}
+
+.HoverEffect path {
+    opacity: 1;
+    fill: rgb(180, 180, 180);
+    fill-opacity: 1;
+    transition: .2s;
+}
+
+.HoverEffect {
+    padding: 5px;
+    margin-left: 5px;
+    float: left;
+    width: 30px;
+    height: auto;
+    transition: .2s;
+    align-self: center;
+    border-radius: 50%;
+    user-select: none;
+}
+
+.continerMiddle {
+    display: flex;
+    justify-content: center;
+}
+
+.childCenter {
+    align-self: center;
+    float: left;
+}
+
+.ULStyle {
+    text-align: center;
+}
+
+.ULStyle li {
+    font-size: 12pt;
+    font-weight: 500;
+    padding: 5px;
+    border-radius: 5px;
+    user-select: none;
+    transition: 0.2s;
+}
+
+.ULStyle li:hover {
+    background-color: rgb(0, 95, 200);
+    color: white;
+    cursor: pointer;
+}

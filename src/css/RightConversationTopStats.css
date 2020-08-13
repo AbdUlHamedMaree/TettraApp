@@ -1,0 +1,29 @@
+﻿.RightConversationTopStats {
+    height: 60px;
+    box-shadow: 0px 1px 4px -2px gray;
+    font-weight: 600;
+}
+
+.RCTS_UserStatus {
+    position: absolute;
+    top: 35px;
+}
+
+.RCTS_Image:hover {
+    cursor: pointer;
+    background-color: white;
+    box-shadow: 0px 0px 4px blue;
+}
+
+.RCTS_Image {
+    position: absolute;
+    border-radius: 50%;
+    left: 5px;
+    border: 2px gray solid;
+    transition: .3s;
+}
+
+.RCTS_UserName {
+    position: absolute;
+    top: 5px;
+}
