@@ -22,5 +22,18 @@ namespace WebApplication_TetraApp.Hubs
             }
             await Clients.All.SendAsync("ReceiveMessage", mes);
         }
+
+        public void CreateGroup(Group grp)
+        {
+            using (AppDB appdb = new AppDB())
+            {
+                try
+                { 
+                    appdb.Groups.Add(grp);
+                    appdb.SaveChanges();
+                }
+                catch { }
+            }
+        }
     }
 }

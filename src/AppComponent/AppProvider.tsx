@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { User, Message } from "./Models";
+import { User, Message, SGroup } from "./Models";
 import $ from "jquery";
 import * as signalR from "@microsoft/signalr";
 
 interface IContextState {
-    ConversationUser: User;
     CurrentUser: User;
+    ConversationUser: User;
     Messages: Message[];
     ConversationMessages: Message[];
     UserContacts: User[];
@@ -19,7 +19,8 @@ export interface IContextInit {
     SetMessages: (mess: Message[]) => void;
     GetUsersByUserNameOrEMail: (usrnm: string | undefined) => User[];
     AddUserToConversations: (usrnm: string) => User;
-    CreateGroup: (usrds : string[]) => void;
+    CreateGroup: (grp: SGroup) => void;
+    AddMemberToGroup: (grp: SGroup, usr: User) => void;
 }
 
 export const MyContext = React.createContext({} as IContextInit);
@@ -140,7 +141,7 @@ export default class AppProvider extends Component<{}, IContextState> {
                     SetMessages: (mess: Message[]) =>
                         this.setState({ ConversationMessages: mess }),
                     GetUsersByUserNameOrEMail: (usrnm: string | undefined) => {
-                        var usrs: User[] = [] as User[];
+                        var usrs = [] as User[];
                         $.ajax({
                             type: "GET",
                             async: false,
@@ -181,8 +182,11 @@ export default class AppProvider extends Component<{}, IContextState> {
                         });
                         return usr;
                     },
-                    CreateGroup: (usrs : string[])=>{
-                        
+                    CreateGroup: (grp: SGroup) => {
+                        this.connection.invoke("CreateGroup", grp);
+                    },
+                    AddMemberToGroup: (grp:SGroup , usr:User) => {
+                        this.connection.invoke("AddMemberToGroup",grp,usr);
                     }
                 }}
             >

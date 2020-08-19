@@ -23,6 +23,7 @@ namespace WebApplication_TetraApp.Controllers
                 try { usr = appDB.Users.Where(u => u.UserName == userName).Single(); }
                 catch (Exception) { return Json("NotFound"); }
             }
+            usr.Password = null;
             return Json(usr);
         }
 
@@ -36,6 +37,7 @@ namespace WebApplication_TetraApp.Controllers
                 try { usr = appDB.Users.Where(u => u.UserID == ID).Single(); }
                 catch (Exception) { return Json("NotFound"); }
             }
+            usr.Password = null;
             return Json(usr);
         }
 
@@ -78,7 +80,7 @@ namespace WebApplication_TetraApp.Controllers
                 }
             return Json(users);
         }
-
+        
         public JsonResult GetMessagesByID(int ID)
         {
             List<Message> messages = new List<Message>();
