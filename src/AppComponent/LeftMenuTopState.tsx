@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { User } from "./Models";
+import { ConversationUser, CurrentUser, SGroup } from "./Models";
 import LeftMenuSingleContact from "./LeftMenuSingleContact";
 import $ from "jquery";
 import { MyContext } from "./AppProvider";
 
 interface ILeftMenuTopStateProps {
-    User: User;
+    CurrentUser: CurrentUser;
 }
 
 interface ILeftMenuTopStateState {
-    UserToAdd: User[];
+    UserToAdd: ConversationUser[];
     UserNameToAdd: string[];
 }
 
@@ -67,11 +67,15 @@ export default class LeftMenuTopState extends Component<
 
 
     CreateGroup = () => {
-
+        let grp = {} as SGroup;
+        grp.groupName = ($("#GroupName_Input_Text") as JQuery<HTMLInputElement>).text();
+        grp.createTime = Date.now();
+        grp.description = "this is my Group!";
+        this.context.CreateGroup(grp);
     }
     constructor(props: ILeftMenuTopStateProps) {
         super(props);
-        this.state = { UserToAdd: [] as User[], UserNameToAdd: [] };
+        this.state = { UserToAdd: [] as ConversationUser[], UserNameToAdd: [] };
     }
     render() {
         return (
@@ -103,6 +107,7 @@ export default class LeftMenuTopState extends Component<
                 <div id="CreateGroupForm">
                     <button onClick={this.CloseGroupButton}>X</button>
                     <input type="submit" value="OK" onClick={this.CreateGroup} />
+                    <input type="text" id="GroupName_Input_Text" placeholder="Group Name" />
                     <ul className="ULStyle">
                         {this.state.UserNameToAdd.map((usr) => (
                             <li className="ListHoverEffect" onClick={(e) => this.DelUserFromGroup(e)}>
@@ -121,14 +126,13 @@ export default class LeftMenuTopState extends Component<
                             <div onClick={(e) => this.AddNewUserToGroup(e)}>
                                 <LeftMenuSingleContact
                                     user={usr}
-                                    Messages={undefined}
                                 />
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div className="LMTS_UserName">{this.props.User.userName}</div>
+                <div className="LMTS_UserName">{this.props.CurrentUser.UserName}</div>
 
                 <img
                     src={require("./../Images/Profile.jpg")}

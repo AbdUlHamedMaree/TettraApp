@@ -80,7 +80,7 @@ namespace WebApplication_TetraApp.Controllers
                 }
             return Json(users);
         }
-        
+
         public JsonResult GetMessagesByID(int ID)
         {
             List<Message> messages = new List<Message>();
@@ -104,7 +104,7 @@ namespace WebApplication_TetraApp.Controllers
             List<User> usrs = new List<User>();
             using (AppDB appdb = new AppDB())
             {
-                usrs = appdb.Users.Where(u => u.UserName.Contains(usrnm) || u.EMail==usrnm).ToList();
+                usrs = appdb.Users.Where(u => u.UserName.Contains(usrnm) || u.EMail == usrnm).ToList();
             }
             foreach (User item in usrs)
             {

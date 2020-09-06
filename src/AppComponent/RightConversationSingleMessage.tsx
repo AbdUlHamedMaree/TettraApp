@@ -29,7 +29,7 @@ export default class RightConversationSingleMessage extends Component<IRightConv
 
     render() {
         return (
-            <div className={'msg RCSM_' + ((this.props.Message.senderUserID === this.context.state.CurrentUser.userID) ? 'Sen' : 'Res')}>
+            <div className={'msg RCSM_' + ((this.props.Message.senderUserID === this.context.state.CurrentUser.UserID) ? 'Sen' : 'Res')}>
                 {this.state.Message.content}
             </div>
         );

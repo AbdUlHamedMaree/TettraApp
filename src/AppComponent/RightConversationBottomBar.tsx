@@ -135,8 +135,8 @@ class RightMenuBottomBar extends Component {
         this.context.AddMessage({
             messageID: RightMenuBottomBar.MessageID++,
             content: $("#Message_TextBox").val(),
-            senderUserID: this.context.state.CurrentUser.userID,
-            reciverUserID: this.context.state.ConversationUser.userID,
+            senderUserID: this.context.state.CurrentUser.UserID,
+            reciverUserID: this.context.state.CurrentConversation?.ConversationID,
             messageSendDate: new Date(),
             readed: false,
             replayMessageID: undefined,

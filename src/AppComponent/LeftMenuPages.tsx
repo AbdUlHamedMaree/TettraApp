@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import $ from "jquery";
 import { MyContext } from "./AppProvider";
-import { User } from "./Models";
+import { ConversationUser } from "./Models";
 import LeftMenuSingleContact from "./LeftMenuSingleContact";
 
 interface LeftMenuPagesProps {}
 
 interface LeftMenuPagesState {
     ActiveId: string;
-    UserToAdd: User[];
+    UserToAdd: ConversationUser[];
 }
 
 export default class LeftMenuPages extends Component<
@@ -20,7 +20,7 @@ export default class LeftMenuPages extends Component<
 
     state = {
         ActiveId: "Persone",
-        UserToAdd: [] as User[],
+        UserToAdd: [] as ConversationUser[],
     };
 
     OpenCloseAddUserContiner = () => {
@@ -249,7 +249,6 @@ export default class LeftMenuPages extends Component<
                             >
                                 <LeftMenuSingleContact
                                     user={usr}
-                                    Messages={undefined}
                                 />
                             </div>
                         ))}

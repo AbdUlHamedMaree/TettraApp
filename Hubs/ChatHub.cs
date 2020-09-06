@@ -28,11 +28,19 @@ namespace WebApplication_TetraApp.Hubs
             using (AppDB appdb = new AppDB())
             {
                 try
-                { 
+                {
                     appdb.Groups.Add(grp);
                     appdb.SaveChanges();
                 }
                 catch { }
+            }
+        }
+        public void AddMemberToGroup(int grp, int usr, Permission permission)
+        {
+            using (AppDB appdb = new AppDB())
+            {
+                appdb.Permissions.Add(permission);
+                appdb.Participants.Add(new Participant() { UserID = usr, GroupID = grp, PermissionID = permission.PermissionID });
             }
         }
     }

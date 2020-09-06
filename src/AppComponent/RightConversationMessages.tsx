@@ -3,38 +3,25 @@ import RightConversationSingleMessage from './RightConversationSingleMessage'
 import { Message } from './Models';
 import { MyContext } from './AppProvider';
 
-interface props {
-    Messages: Message[]
+interface RightConversationMessagesState {
+    Messages?: Message[]
 }
 
-interface state {
-    Messages: Message[]
-}
+export default class RightConversationMessages extends Component<{}, RightConversationMessagesState> {
+    static contextType = MyContext;
+    context!: React.ContextType<typeof MyContext>
 
-export default class RightConversationMessages extends Component<props, state> {
-    state = {
-        Messages: this.context.Messages
-    }
-    static getDerivedStateFromProps(props: props, state: state) {
-        if (props.Messages !== state.Messages) {
-            return {
-                Messages: props.Messages
-            };
-        }
-        return null;
-    }
     render() {
         return (
             <div className='RightConversationMessages'>
                 {
-                    this.state.Messages!.map((mes: Message) =>
+                    this.context.state.CurrentConversation?.Messages === undefined ? '' : this.context.state.CurrentConversation.Messages.map((mes: Message) =>
                         <RightConversationSingleMessage
                             key={mes.messageID}
-                            Message = {mes}/>
+                            Message={mes} />
                     )
                 }
             </div>
         )
     }
 }
-RightConversationMessages.contextType = MyContext;

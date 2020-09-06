@@ -1,38 +1,38 @@
 import React, { Component } from "react";
-import { User, Message, SGroup } from "./Models";
+import { SUser, Message, SGroup, SPermission, AppState, CurrentUser, ConversationUser } from "./Models";
 import $ from "jquery";
 import * as signalR from "@microsoft/signalr";
-
-interface IContextState {
-    CurrentUser: User;
-    ConversationUser: User;
-    Messages: Message[];
-    ConversationMessages: Message[];
-    UserContacts: User[];
-}
+export const MyContext = React.createContext({} as IContextInit);
 
 export interface IContextInit {
-    state: IContextState;
-    SetCurrentUser: (usr: User) => void;
-    SetContact: (name: User) => void;
+    state: AppState;
+    SetContact: (name: ConversationUser) => void;
     AddMessage: (mes: Message) => void;
-    SetMessages: (mess: Message[]) => void;
-    GetUsersByUserNameOrEMail: (usrnm: string | undefined) => User[];
-    AddUserToConversations: (usrnm: string) => User;
+    GetUsersByUserNameOrEMail: (usrnm: string | undefined) => ConversationUser[];
+    AddUserToConversations: (usrnm: string) => ConversationUser;
     CreateGroup: (grp: SGroup) => void;
-    AddMemberToGroup: (grp: SGroup, usr: User) => void;
+    AddMemberToGroup: (grp: SGroup, usr: SUser, permession: SPermission) => void;
 }
 
-export const MyContext = React.createContext({} as IContextInit);
-export default class AppProvider extends Component<{}, IContextState> {
+export class Convertion {
+    public static SToUser = (usr: SUser): ConversationUser => {
+        return { Bio: usr.bio, ConversationID: usr.userID, ConversationName: usr.userName, EMail: usr.eMail, FullName: usr.fullName, LastSeen: usr.lastSeen } as ConversationUser;
+    }
+
+    public static UserToS = (usr: ConversationUser): SUser => {
+        return { activate: true, bio: usr.Bio, lastSeen: usr.LastSeen, male: true, eMail: usr.EMail, fullName: usr.FullName, onLine: true, userID: usr.ConversationID, userName: usr.ConversationName } as SUser;
+    }
+}
+
+export default class AppProvider extends Component<{}, AppState> {
     connection: signalR.HubConnection;
     static contextType = MyContext;
     context!: React.ContextType<typeof MyContext>;
 
     constructor(props: any) {
         super(props);
-        var usr = {} as User;
-        var usrcon = [] as User[];
+        var usr = {} as SUser;
+        var usrcon = [] as ConversationUser[];
         var mess = [] as Message[];
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl("/chatHub")
@@ -43,11 +43,28 @@ export default class AppProvider extends Component<{}, IContextState> {
             .then(() => {
                 console.log("connection is done with socket");
                 this.connection.on("ReceiveMessage", (mes: Message) => {
-                    this.setState({
-                        Messages: this.state.Messages.concat(mes),
-                    });
-                    if (mes.reciverUserID === this.state.CurrentUser.userID || mes.reciverUserID === this.state.ConversationUser.userID)
-                        this.setState({ ConversationMessages: this.state.ConversationMessages.concat(mes) })
+                    if (mes.reciverUserID === this.state.CurrentUser.UserID || mes.senderUserID === this.state.CurrentUser.UserID) {
+                        if (mes.reciverUserID !== -1) {
+                            let tmp = this.state.UserConversations.find((val) => { return val.ConversationID === mes.reciverUserID||val.ConversationID === mes.senderUserID; });
+                            if (tmp !== undefined) {
+                                tmp.Messages = tmp.Messages?.concat(mes);
+                                this.setState({ UserConversations: this.state.UserConversations })
+                            }
+                            else {
+                                //get the new User and add the message to it
+                            }
+                        }
+                        else {
+                            let tmp = this.state.GroupConversations.find((val) => { return val.ConversationID === mes.reciverGroupID; });
+                            if (tmp !== undefined) {
+                                tmp.Messages = tmp.Messages?.concat(mes);
+                                this.setState({ GroupConversations: this.state.GroupConversations })
+                            }
+                            else {
+                                //get the new Group and add the message to it
+                            }
+                        }
+                    }
                 });
             })
             .catch((err: any) => console.error(err.toString()));
@@ -70,10 +87,10 @@ export default class AppProvider extends Component<{}, IContextState> {
                         male: true,
                         password: "a",
                         mediaID: undefined,
-                    } as User;
+                    } as SUser;
                 } else {
                     console.log("user found");
-                    usr = result as User;
+                    usr = result as SUser;
                 }
             },
             error: (xhr) => {
@@ -89,9 +106,25 @@ export default class AppProvider extends Component<{}, IContextState> {
                     male: true,
                     password: "a",
                     mediaID: undefined,
-                } as User;
+                } as SUser;
             },
         });
+
+        $.ajax({
+            type: "GET",
+            async: false,
+            url: "https://localhost:44309/TetraAPI/GetUserConversationByID",
+            data: { ID: usr.userID },
+            success: (result: SUser[]) => {
+                result.forEach((item) => {
+                    usrcon = usrcon.concat({ ConversationID: item.userID, Bio: item.bio, ConversationName: item.userName, LastSeen: item.lastSeen } as ConversationUser)
+                })
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            },
+        });
+
         $.ajax({
             type: "GET",
             async: false,
@@ -99,29 +132,32 @@ export default class AppProvider extends Component<{}, IContextState> {
             data: { ID: usr.userID },
             success: (result: Message[]) => {
                 mess = result;
+                usrcon.forEach((val) => {
+                    val.Messages = mess.filter((mess) => {
+                        if (mess.senderUserID === val.ConversationID || mess.reciverUserID === val.ConversationID)
+                            return mess;
+                        else return undefined;
+                    })
+                })
+                console.log(usrcon);
             },
             error: (xhr) => {
                 console.log(xhr);
             },
         });
-        $.ajax({
-            type: "GET",
-            async: false,
-            url: "https://localhost:44309/TetraAPI/GetUserConversationByID",
-            data: { ID: usr.userID },
-            success: (result: User[]) => {
-                usrcon = result;
-            },
-            error: (xhr) => {
-                console.log(xhr);
-            },
-        });
+
+        let tmp = {} as CurrentUser;
+        tmp.UserID = usr.userID;
+        tmp.UserName = usr.userName;
+        tmp.FullName = usr.fullName;
+        tmp.EMail = usr.eMail;
+        tmp.Bio = usr.bio;
+        // tmp.ImagePath = usr
         this.state = {
-            CurrentUser: usr,
-            UserContacts: usrcon,
-            Messages: mess,
-            ConversationMessages: [] as Message[],
-            ConversationUser: {} as User,
+            CurrentUser: tmp,
+            UserConversations: usrcon,
+            GroupConversations: [],
+            CurrentConversation: {} as ConversationUser
         };
     }
     render() {
@@ -129,36 +165,34 @@ export default class AppProvider extends Component<{}, IContextState> {
             <MyContext.Provider
                 value={{
                     state: this.state,
-                    SetCurrentUser: (usr: User) =>
-                        this.setState({ CurrentUser: usr }),
-                    SetContact: (usr: User) =>
-                        this.setState({ ConversationUser: usr }),
+                    SetContact: (usr: ConversationUser) =>
+                        this.setState({ CurrentConversation: usr }),
                     AddMessage: (mes: Message) => {
                         this.connection
                             .invoke("SendMessage", mes)
                             .catch((err) => console.error(err.toString()));
                     },
-                    SetMessages: (mess: Message[]) =>
-                        this.setState({ ConversationMessages: mess }),
                     GetUsersByUserNameOrEMail: (usrnm: string | undefined) => {
-                        var usrs = [] as User[];
+                        var usrs = [] as SUser[];
+                        let res = [] as ConversationUser[];
                         $.ajax({
                             type: "GET",
                             async: false,
                             url:
                                 "https://localhost:44309/TetraAPI/GetUsersByUserNameOrEMail",
                             data: { usrnm: usrnm },
-                            success: (result: User[]) => {
+                            success: (result: SUser[]) => {
                                 usrs = result;
                             },
                             error: (xhr) => {
                                 console.log(xhr);
                             },
                         });
-                        return usrs;
+                        usrs.forEach((item) => { res = res.concat(Convertion.SToUser(item)) })
+                        return res;
                     },
                     AddUserToConversations: (usrnm: string) => {
-                        var usr = {} as User;
+                        var usr = {} as ConversationUser;
                         $.ajax({
                             type: "GET",
                             async: false,
@@ -166,14 +200,13 @@ export default class AppProvider extends Component<{}, IContextState> {
                                 "https://localhost:44309/TetraAPI/AddUserToConversationsByUserName",
                             data: {
                                 usrnm: usrnm,
-                                curusrnm: this.state.CurrentUser.userName,
+                                curusrnm: this.state.CurrentUser.UserName,
                             },
-                            success: (result: User) => {
-                                usr = result;
+                            success: (result: SUser) => {
+                                usr = { ConversationID: result.userID, Bio: result.bio, ConversationName: result.userName, LastSeen: result.lastSeen, EMail: result.eMail, FullName: result.fullName } as ConversationUser;
+
                                 this.setState({
-                                    UserContacts: this.state.UserContacts.concat(
-                                        usr
-                                    ),
+                                    UserConversations: this.state.UserConversations.concat(usr)
                                 });
                             },
                             error: (xhr) => {
@@ -185,8 +218,8 @@ export default class AppProvider extends Component<{}, IContextState> {
                     CreateGroup: (grp: SGroup) => {
                         this.connection.invoke("CreateGroup", grp);
                     },
-                    AddMemberToGroup: (grp:SGroup , usr:User) => {
-                        this.connection.invoke("AddMemberToGroup",grp,usr);
+                    AddMemberToGroup: (grp: SGroup, usr: SUser, permession: SPermission) => {
+                        this.connection.invoke("AddMemberToGroup", grp.groupID, usr.userID, permession).catch((err) => { console.log(err) });
                     }
                 }}
             >

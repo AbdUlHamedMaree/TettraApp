@@ -12,9 +12,9 @@ class LeftMenu extends Component {
                     {
                         context => (
                             <React.Fragment>
-                                <LeftMenuTopState User = {context.state.CurrentUser} />
+                                <LeftMenuTopState CurrentUser = {context.state.CurrentUser} />
                                 Chats:
-                                <LeftMenuContacts Contacts = {context.state.UserContacts}/>
+                                <LeftMenuContacts Contacts = {context.state.UserConversations}/>
                                 <LeftMenuPages />
                             </React.Fragment>
                         )

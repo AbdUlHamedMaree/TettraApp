@@ -3,11 +3,9 @@ import RightConversationTopStats from './RightConversationTopStats';
 import RightConversationBottomBar from './RightConversationBottomBar';
 import RightConversationMessages from './RightConversationMessages';
 import { MyContext } from './AppProvider';
-import { Message } from './Models';
 
 
 interface RightConversationState {
-    Messages: Message[]
 }
 
 class RightConversation extends Component<{}, RightConversationState>{
@@ -18,16 +16,10 @@ class RightConversation extends Component<{}, RightConversationState>{
     render() {
         return (
             <div className='RightConversation'>
-                <MyContext.Consumer>
-                    {
-                        context => (
                             <React.Fragment>
                                 <RightConversationTopStats />
-                                <RightConversationMessages Messages={context.state.ConversationMessages} />
+                                <RightConversationMessages />
                             </React.Fragment>
-                        )
-                    }
-                </MyContext.Consumer>
                 <RightConversationBottomBar />
             </div>
         );

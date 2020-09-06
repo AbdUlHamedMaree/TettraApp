@@ -13,10 +13,11 @@ export default class RightConversationTopStats extends Component {
                 <MyContext.Consumer >
                     {
                         (context) => {
+                            console.log(context.state.CurrentConversation?.ConversationName)
                             return <React.Fragment>
                                 <div className='RCTS_UserName childCenter'>
                                     {
-                                        context.state.ConversationUser.userName
+                                        context.state.CurrentConversation?.ConversationName
                                     }
                                 </div>
                                 <div className='RCTS_UserStatus childCenter'>

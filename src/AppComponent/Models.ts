@@ -1,14 +1,14 @@
-export interface User {
+export interface SUser {
     userID: number;
     fullName: string;
     userName: string;
-    password: string;
+    password?: string;
     eMail: string;
     male: boolean;
     bio: string;
     activate: boolean;
     mediaID?: number;
-    lastSeen: Date;
+    lastSeen: number;
     onLine: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface SGroup {
     groupID: number;
     groupName: string;
     description: string;
-    createTime: string;
+    createTime: number;
     mediaID?: number;
 }
 
@@ -69,6 +69,13 @@ export interface SMessage_Media {
     mediaID: number;
 }
 
+export interface SConversation {
+    conversationID: number;
+    startDate: Date;
+    userOneID: number;
+    userTwoID: number;
+}
+
 export interface Message {
     messageID: number;
     content: string;
@@ -80,28 +87,39 @@ export interface Message {
     reciverGroupID?: number;
 }
 
-export interface SConversation {
-    conversationID: number;
-    startDate: Date;
-    userOneID: number;
-    userTwoID: number;
-}
 
-interface Conversation {
-    conversationID: number;
-    conversationName: string;
-    bio: string;
-    imagePath?: string;
-    messages?:Message[]
-    LastMessage: Message;
-}
 
-export interface UserConversation extends Conversation{
-    onLine:boolean;
-    eMail:string;
-    fullName:string;
-}
+//********************************************************************
 
-export interface GroupConversation extends Conversation{
-    participants:User[];
+
+
+export interface CurrentUser {
+    UserID: number;
+    FullName: string;
+    UserName: string;
+    EMail: string;
+    Bio?: string;
+    ImagePath?: string;
+}
+export interface Conversation {
+    ConversationID: number;
+    ConversationName: string;
+    Bio: string;
+    ImagePath?: string;
+    Messages?: Message[];
+    LastMessage?: Message;
+}
+export interface ConversationUser extends Conversation {
+    LastSeen: number;
+    FullName:string;
+    EMail:string;
+}
+export interface ConversationGroup extends Conversation {
+    Participant: ConversationUser[];
+}
+export interface AppState {
+    CurrentUser:CurrentUser;
+    UserConversations:ConversationUser[];
+    GroupConversations:ConversationGroup[];
+    CurrentConversation?:ConversationGroup|ConversationUser;
 }

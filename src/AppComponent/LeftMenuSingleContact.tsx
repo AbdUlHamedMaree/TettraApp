@@ -1,62 +1,68 @@
 ﻿import React, { Component } from "react";
-import { IContextInit, MyContext } from "./AppProvider";
-import { User, Message } from "./Models";
+import {  MyContext } from "./AppProvider";
+import { ConversationUser } from "./Models";
 
 interface ILeftMenuSingleContactProps {
-    user: User;
-    Messages: Message[] | undefined;
+    user: ConversationUser;
 }
 
 interface ILeftMenuSingleContactState {
-    Messages: Message[];
+    user: ConversationUser
 }
 
 export default class LeftMenuSingleContact extends Component<
     ILeftMenuSingleContactProps,
     ILeftMenuSingleContactState
-> {
+    > {
     static contextType = MyContext;
     context!: React.ContextType<typeof MyContext>;
 
-    setConversation = (context: IContextInit) => {
-        context.SetContact(this.props.user);
-        if (this.props.Messages !== undefined)
-            context.SetMessages(this.props.Messages);
+    constructor(props: ILeftMenuSingleContactProps) {
+        super(props)
+        this.state = { user: props.user }
+    }
+
+    static getDerivedStateFromProps(props: ILeftMenuSingleContactProps, state: ILeftMenuSingleContactState) {
+        if (props !== state) {
+            return {
+                Message: props.user
+            };
+        }
+        return null;
+    }
+    setConversation = () => {
+        this.context.SetContact(this.props.user);
     };
     render() {
         return (
-            <MyContext.Consumer>
-                {(context) => (
-                    <div
-                        className="LeftMenuSingleContact"
-                        onClick={() => this.setConversation(context)}
-                    >
-                        <div>
-                            <img
-                                className="LMC_Image"
-                                src={require("../Images/Profile.jpg")}
-                                width="50px"
-                                height="50px"
-                                alt="Profile"
-                            />
-                        </div>
-                        <div className="LMC_UserName">
-                            {this.props.user.userName}
-                        </div>
-                        <div className="LMC_LastMessage">
-                            {this.props.Messages===undefined?
-                            "":
-                                this.props.Messages![
-                                    this.props.Messages!.length - 1
-                                ].content
-                            }
-                        </div>
-                        <div className="LMC_LastSeen">
-                            {this.props.user.lastSeen}
-                        </div>
-                    </div>
-                )}
-            </MyContext.Consumer>
+            <div
+                className="LeftMenuSingleContact"
+                onClick={() => this.setConversation()}
+            >
+                <div>
+                    <img
+                        className="LMC_Image"
+                        src={require("../Images/Profile.jpg")}
+                        width="50px"
+                        height="50px"
+                        alt="Profile"
+                    />
+                </div>
+                <div className="LMC_UserName">
+                    {this.props.user.ConversationName}
+                </div>
+                <div className="LMC_LastMessage">
+                    {this.props.user.Messages === undefined ?
+                        "" :
+                        this.props.user.Messages![
+                            this.props.user.Messages!.length - 1
+                        ].content
+                    }
+                </div>
+                <div className="LMC_LastSeen">
+                    {this.props.user.LastSeen}
+                </div>
+            </div>
         );
     }
 }
