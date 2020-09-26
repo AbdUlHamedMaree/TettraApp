@@ -34,8 +34,12 @@ export default class AppProvider extends Component<{}, AppState> {
         var usr = {} as SUser;
         var usrcon = [] as ConversationUser[];
         var mess = [] as Message[];
+        // this.connection = new signalR.HubConnectionBuilder()
+        //     .configureLogging(signalR.LogLevel.Debug)
+        //     .withUrl("https://localhost:44399/chathub")
+        //     .build();
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chatHub")
+            .withUrl("/chathub")
             .build();
 
         this.connection
@@ -45,7 +49,7 @@ export default class AppProvider extends Component<{}, AppState> {
                 this.connection.on("ReceiveMessage", (mes: Message) => {
                     if (mes.reciverUserID === this.state.CurrentUser.UserID || mes.senderUserID === this.state.CurrentUser.UserID) {
                         if (mes.reciverUserID !== -1) {
-                            let tmp = this.state.UserConversations.find((val) => { return val.ConversationID === mes.reciverUserID||val.ConversationID === mes.senderUserID; });
+                            let tmp = this.state.UserConversations.find((val) => { return val.ConversationID === mes.reciverUserID || val.ConversationID === mes.senderUserID; });
                             if (tmp !== undefined) {
                                 tmp.Messages = tmp.Messages?.concat(mes);
                                 this.setState({ UserConversations: this.state.UserConversations })
@@ -204,7 +208,6 @@ export default class AppProvider extends Component<{}, AppState> {
                             },
                             success: (result: SUser) => {
                                 usr = { ConversationID: result.userID, Bio: result.bio, ConversationName: result.userName, LastSeen: result.lastSeen, EMail: result.eMail, FullName: result.fullName } as ConversationUser;
-
                                 this.setState({
                                     UserConversations: this.state.UserConversations.concat(usr)
                                 });

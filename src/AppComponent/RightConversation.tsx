@@ -16,10 +16,8 @@ class RightConversation extends Component<{}, RightConversationState>{
     render() {
         return (
             <div className='RightConversation'>
-                            <React.Fragment>
-                                <RightConversationTopStats />
-                                <RightConversationMessages />
-                            </React.Fragment>
+                <RightConversationTopStats />
+                <RightConversationMessages />
                 <RightConversationBottomBar />
             </div>
         );

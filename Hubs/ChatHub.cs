@@ -16,31 +16,33 @@ namespace WebApplication_TetraApp.Hubs
                 try
                 {
                     appdb.Messages.Add(mes);
-                    appdb.SaveChanges();
+                    await appdb.SaveChangesAsync();
                 }
                 catch { }
             }
             await Clients.All.SendAsync("ReceiveMessage", mes);
         }
 
-        public void CreateGroup(Group grp)
+        public async Task CreateGroup(Group grp)
         {
             using (AppDB appdb = new AppDB())
             {
                 try
                 {
                     appdb.Groups.Add(grp);
-                    appdb.SaveChanges();
+                    await appdb.SaveChangesAsync();
                 }
                 catch { }
             }
         }
-        public void AddMemberToGroup(int grp, int usr, Permission permission)
+
+        public async Task AddMemberToGroup(int grp, int usr, Permission permission)
         {
             using (AppDB appdb = new AppDB())
             {
                 appdb.Permissions.Add(permission);
                 appdb.Participants.Add(new Participant() { UserID = usr, GroupID = grp, PermissionID = permission.PermissionID });
+                await appdb.SaveChangesAsync();
             }
         }
     }

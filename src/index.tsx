@@ -32,10 +32,10 @@ function setWidth() {
             borderWidth: '0px'
         });
         $('.RightConversation').css({
+            width: '100%',
+            height: (windowHeight! - 1),
             position: 'absolute',
-            zIndex: '-1',
-            width: '50px',
-            height: '50px'
+            boxShadow: 'inset gray 1px 0px 3px 0px'
         })
         $('.LMPHoverEffect').css({
             margin: '0px ' + (windowWidth! / 150) + '%'
@@ -66,11 +66,6 @@ function setWidth() {
         })
     }
 }
-$('.HoverEffect').on('click', () => {
-    $('.HoverEffect').css({
-        width: '500px'
-    })
-});
 
 ReactDOM.render(< App />, document.getElementById("root"))
 

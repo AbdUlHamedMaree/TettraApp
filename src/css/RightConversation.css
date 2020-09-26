@@ -1,4 +1,5 @@
 ﻿.RightConversation {
     background-color: white;
     float: left;
+    display: none;
 }

@@ -126,6 +126,7 @@ export default class LeftMenuTopState extends Component<
                             <div onClick={(e) => this.AddNewUserToGroup(e)}>
                                 <LeftMenuSingleContact
                                     user={usr}
+                                    setContact={()=>{}}
                                 />
                             </div>
                         ))}

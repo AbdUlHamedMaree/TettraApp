@@ -3,8 +3,18 @@ import $ from "jquery";
 import { MyContext } from "./AppProvider";
 import { ConversationUser } from "./Models";
 import LeftMenuSingleContact from "./LeftMenuSingleContact";
+interface IProduct {
+    Name: string;
+    ImageURL: string;
+    Price: string;
+    OriginalPrice?: string;
+    PriceCurrency: string;
+    Category: string[];
+    Brad: string;
+    ItemCount: number;
+}
 
-interface LeftMenuPagesProps {}
+interface LeftMenuPagesProps { }
 
 interface LeftMenuPagesState {
     ActiveId: string;
@@ -14,7 +24,7 @@ interface LeftMenuPagesState {
 export default class LeftMenuPages extends Component<
     LeftMenuPagesProps,
     LeftMenuPagesState
-> {
+    > {
     static contextType = MyContext;
     context!: React.ContextType<typeof MyContext>;
 
@@ -90,7 +100,8 @@ export default class LeftMenuPages extends Component<
         $(parent).css({ backgroundColor: "rgb(240,240,240)" });
         $(child).css({ fill: "rgb(180, 180, 180)" });
     };
-    componentDidMount() {
+    componentDidMount() {       
+
         $(window).on("load", () => {
             $("#" + this.state.ActiveId)
                 .children()
@@ -249,6 +260,7 @@ export default class LeftMenuPages extends Component<
                             >
                                 <LeftMenuSingleContact
                                     user={usr}
+                                    setContact={() => { }}
                                 />
                             </div>
                         ))}

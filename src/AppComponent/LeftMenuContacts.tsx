@@ -11,6 +11,10 @@ class LeftMenuContacts extends Component<ILeftMenuContactsProps, {}> {
     static contextType = MyContext;
     context!: React.ContextType<typeof MyContext>;
 
+    SetConversation = (usr: ConversationUser) => {
+        this.context.SetContact(usr);
+    }
+
     render() {
         return (
             <div className="LeftMenuContacts">
@@ -20,6 +24,7 @@ class LeftMenuContacts extends Component<ILeftMenuContactsProps, {}> {
                             <LeftMenuSingleContact
                                 key={contact.ConversationID}
                                 user={contact}
+                                setContact={this.SetConversation}
                             />
                         );
                     })

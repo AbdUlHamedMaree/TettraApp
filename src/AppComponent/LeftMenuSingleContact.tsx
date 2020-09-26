@@ -1,9 +1,11 @@
 ﻿import React, { Component } from "react";
-import {  MyContext } from "./AppProvider";
+import { MyContext } from "./AppProvider";
 import { ConversationUser } from "./Models";
+import $ from "jquery";
 
 interface ILeftMenuSingleContactProps {
     user: ConversationUser;
+    setContact: ((usr: ConversationUser) => void) | (() => void)
 }
 
 interface ILeftMenuSingleContactState {
@@ -31,7 +33,8 @@ export default class LeftMenuSingleContact extends Component<
         return null;
     }
     setConversation = () => {
-        this.context.SetContact(this.props.user);
+        this.props.setContact(this.props.user);
+        $(".RightConversation").css({ display: 'block' });
     };
     render() {
         return (
