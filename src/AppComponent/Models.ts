@@ -8,7 +8,7 @@ export interface SUser {
     bio: string;
     activate: boolean;
     mediaID?: number;
-    lastSeen: number;
+    lastSeen: Date;
     onLine: boolean;
 }
 
@@ -32,7 +32,7 @@ export interface SGroup {
     groupID: number;
     groupName: string;
     description: string;
-    createTime: number;
+    createTime: Date;
     mediaID?: number;
 }
 
@@ -110,7 +110,7 @@ export interface Conversation {
     LastMessage?: Message;
 }
 export interface ConversationUser extends Conversation {
-    LastSeen: number;
+    LastSeen: Date;
     FullName:string;
     EMail:string;
 }

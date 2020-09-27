@@ -10,8 +10,8 @@ export interface IContextInit {
     AddMessage: (mes: Message) => void;
     GetUsersByUserNameOrEMail: (usrnm: string | undefined) => ConversationUser[];
     AddUserToConversations: (usrnm: string) => ConversationUser;
-    CreateGroup: (grp: SGroup) => void;
-    AddMemberToGroup: (grp: SGroup, usr: SUser, permession: SPermission) => void;
+    CreateGroup: (grp: SGroup) => number;
+    AddMemberToGroup: (grpid: number, usrnm: string, permession: SPermission) => void;
 }
 
 export class Convertion {
@@ -34,6 +34,7 @@ export default class AppProvider extends Component<{}, AppState> {
         var usr = {} as SUser;
         var usrcon = [] as ConversationUser[];
         var mess = [] as Message[];
+        let userID = parseInt($("#ID").val()!.toString());
         // this.connection = new signalR.HubConnectionBuilder()
         //     .configureLogging(signalR.LogLevel.Debug)
         //     .withUrl("https://localhost:44399/chathub")
@@ -45,28 +46,46 @@ export default class AppProvider extends Component<{}, AppState> {
         this.connection
             .start()
             .then(() => {
-                console.log("connection is done with socket");
+                console.log("connection is OK with socket");
+                this.connection.invoke("LogIn", userID).catch((err) => console.log(err));
                 this.connection.on("ReceiveMessage", (mes: Message) => {
-                    if (mes.reciverUserID === this.state.CurrentUser.UserID || mes.senderUserID === this.state.CurrentUser.UserID) {
-                        if (mes.reciverUserID !== -1) {
-                            let tmp = this.state.UserConversations.find((val) => { return val.ConversationID === mes.reciverUserID || val.ConversationID === mes.senderUserID; });
-                            if (tmp !== undefined) {
-                                tmp.Messages = tmp.Messages?.concat(mes);
-                                this.setState({ UserConversations: this.state.UserConversations })
-                            }
-                            else {
-                                //get the new User and add the message to it
-                            }
+                    //user message
+                    if (mes.reciverUserID !== -1) {
+                        let tmp = this.state.UserConversations.find((val) => { return val.ConversationID === mes.reciverUserID || val.ConversationID === mes.senderUserID; });
+                        //user in contacts
+                        if (tmp !== undefined) {
+                            tmp.Messages = tmp.Messages?.concat(mes);
+                            this.setState({ UserConversations: this.state.UserConversations })
+                        }
+                        //get new user and add message to it
+                        else {
+                            $.ajax({
+                                type: "GET",
+                                async: true,
+                                url: "https://localhost:44309/TetraAPI/GetUserDataByID",
+                                data: { ID: mes.senderUserID },
+                                success: (res: SUser) => {
+                                    let tmp = { ConversationID: res.userID, Bio: res.bio, ConversationName: res.userName, LastSeen: res.lastSeen, EMail: res.eMail, FullName: res.fullName } as ConversationUser;
+                                    tmp.Messages = [mes] as Message[];
+                                    this.setState({
+                                        UserConversations: this.state.UserConversations.concat(tmp)
+                                    });
+                                },
+                                error: (xhr) => {
+                                    console.error(xhr);
+                                },
+                            });
+                        }
+                    }
+                    //group message
+                    else {
+                        let tmp = this.state.GroupConversations.find((val) => { return val.ConversationID === mes.reciverGroupID; });
+                        if (tmp !== undefined) {
+                            tmp.Messages = tmp.Messages?.concat(mes);
+                            this.setState({ GroupConversations: this.state.GroupConversations })
                         }
                         else {
-                            let tmp = this.state.GroupConversations.find((val) => { return val.ConversationID === mes.reciverGroupID; });
-                            if (tmp !== undefined) {
-                                tmp.Messages = tmp.Messages?.concat(mes);
-                                this.setState({ GroupConversations: this.state.GroupConversations })
-                            }
-                            else {
-                                //get the new Group and add the message to it
-                            }
+                            //get the new Group and add the message to it
                         }
                     }
                 });
@@ -77,10 +96,9 @@ export default class AppProvider extends Component<{}, AppState> {
             type: "GET",
             async: false,
             url: "https://localhost:44309/TetraAPI/GetUserDataByID",
-            data: { ID: $("#ID").val() },
+            data: { ID: userID },
             success: (result: any) => {
                 if (result === "NotFound") {
-                    console.log("user not found: Get Data From Variables");
                     usr = {
                         userID: 2,
                         eMail: "a@a.com",
@@ -93,13 +111,11 @@ export default class AppProvider extends Component<{}, AppState> {
                         mediaID: undefined,
                     } as SUser;
                 } else {
-                    console.log("user found");
                     usr = result as SUser;
                 }
             },
             error: (xhr) => {
-                console.log("Server error: Get Data From Variables");
-                console.log(xhr);
+                console.error(xhr);
                 usr = {
                     userID: 2,
                     eMail: "a@a.com",
@@ -125,7 +141,7 @@ export default class AppProvider extends Component<{}, AppState> {
                 })
             },
             error: (xhr) => {
-                console.log(xhr);
+                console.error(xhr);
             },
         });
 
@@ -143,10 +159,9 @@ export default class AppProvider extends Component<{}, AppState> {
                         else return undefined;
                     })
                 })
-                console.log(usrcon);
             },
             error: (xhr) => {
-                console.log(xhr);
+                console.error(xhr);
             },
         });
 
@@ -219,10 +234,12 @@ export default class AppProvider extends Component<{}, AppState> {
                         return usr;
                     },
                     CreateGroup: (grp: SGroup) => {
-                        this.connection.invoke("CreateGroup", grp);
+                        this.connection.invoke("CreateGroup", grp).then((val: number) => grp.groupID = val);
+                        console.log(grp.groupID);
+                        return grp.groupID;
                     },
-                    AddMemberToGroup: (grp: SGroup, usr: SUser, permession: SPermission) => {
-                        this.connection.invoke("AddMemberToGroup", grp.groupID, usr.userID, permession).catch((err) => { console.log(err) });
+                    AddMemberToGroup: (grpid: number, usrnm: string, permession: SPermission) => {
+                        // this.connection.invoke("AddMemberToGroup", grpid, usrnm, permession).catch((err) => { console.log(err) });
                     }
                 }}
             >

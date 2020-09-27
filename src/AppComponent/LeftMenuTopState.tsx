@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ConversationUser, CurrentUser, SGroup } from "./Models";
+import { ConversationUser, CurrentUser, SGroup, SPermission } from "./Models";
 import LeftMenuSingleContact from "./LeftMenuSingleContact";
 import $ from "jquery";
 import { MyContext } from "./AppProvider";
@@ -68,10 +68,13 @@ export default class LeftMenuTopState extends Component<
 
     CreateGroup = () => {
         let grp = {} as SGroup;
-        grp.groupName = ($("#GroupName_Input_Text") as JQuery<HTMLInputElement>).text();
-        grp.createTime = Date.now();
+        grp.groupName = $("#GroupName_Input_Text").val()!.toString();
+        grp.createTime = new Date();
         grp.description = "this is my Group!";
-        this.context.CreateGroup(grp);
+        grp.groupID = this.context.CreateGroup(grp);
+        $("#GroupToCreateMember_ul").get().forEach((val) => {
+            this.context.AddMemberToGroup(grp.groupID, val.innerText, { addingUsers: true, changeGroupName: true, changeGroupPicture: true, writing: true } as SPermission)
+        })
     }
     constructor(props: ILeftMenuTopStateProps) {
         super(props);
@@ -108,7 +111,7 @@ export default class LeftMenuTopState extends Component<
                     <button onClick={this.CloseGroupButton}>X</button>
                     <input type="submit" value="OK" onClick={this.CreateGroup} />
                     <input type="text" id="GroupName_Input_Text" placeholder="Group Name" />
-                    <ul className="ULStyle">
+                    <ul id="GroupToCreateMember_ul" className="ULStyle">
                         {this.state.UserNameToAdd.map((usr) => (
                             <li className="ListHoverEffect" onClick={(e) => this.DelUserFromGroup(e)}>
                                 {usr}
@@ -126,7 +129,7 @@ export default class LeftMenuTopState extends Component<
                             <div onClick={(e) => this.AddNewUserToGroup(e)}>
                                 <LeftMenuSingleContact
                                     user={usr}
-                                    setContact={()=>{}}
+                                    setContact={() => { }}
                                 />
                             </div>
                         ))}
